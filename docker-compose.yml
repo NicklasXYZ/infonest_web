@@ -1,0 +1,58 @@
+# Docker Compose file Reference: https://docs.docker.com/compose/compose-file/compose-file-v3/
+version: '3.9'
+
+services:
+
+  nginx:
+    restart: unless-stopped
+    image: jonasal/nginx-certbot:latest
+    container_name: nginx-certbot
+    env_file: ./nginx-certbot.env
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - nginx_secrets:/etc/letsencrypt:rw
+      - ./user_conf.d:/etc/nginx/user_conf.d:rw
+    logging:
+      driver: "json-file"
+      options:
+        max-file: 5
+        max-size: 10m
+
+  bandim-fastapi:
+    restart: always
+
+    image: ghcr.io/nicklasxyz/bandim_system:main
+    container_name: bandim-api
+    env_file: ./bandim-fastapi.env
+    ports:
+      - "8000:8000"
+    # volumes:
+    #   - bandim_db:/app/bandim.db:rw
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: "10m"
+
+  redis:
+    restart: always
+    image: redis:latest
+    container_name: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data:rw
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: "10m"
+
+volumes:
+  nginx_secrets:
+  bandim_db:
+  redis_data:
+
+

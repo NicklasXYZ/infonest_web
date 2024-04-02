@@ -1,0 +1,49 @@
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      API_KEYS: ${{ secrets.API_KEYS }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@v4
+
+      - name: "Edit nginx-certbot.env file"
+        run: |
+          sed -i~ '/^CERTBOT_EMAIL=/s|=.*|="${{ secrets.CERTBOT_EMAIL }}"|' nginx-certbot.env
+
+      - name: "Edit bandim-fastapi.env file"
+        run: |
+          sed -i~ '/^API_KEYS=/s|=.*|="${{ secrets.API_KEYS }}"|' bandim-fastapi.env
+          sed -i~ '/^JWT_SECRET=/s|=.*|="${{ secrets.JWT_SECRET }}"|' bandim-fastapi.env
+
+    # # Copy files to remote server
+    # - name: 'Copy .env file to server using SCP'
+    #   uses: appleboy/scp-action@master
+    #   with:
+    #     host: ${{ secrets.SERVER_IP }}
+    #     username: ${{ secrets.SERVER_USER }}
+    #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+    #     port: 22
+    #     source: "./*"
+    #     target: "~/deploy/${{ github.event.repository.name }}/"
+
+    # # Deploy Docker image remotely
+    # - name: 'Remote docker-compose up via ssh'
+    #   uses: appleboy/ssh-action@master
+    #   with:
+    #     host: ${{ secrets.SERVER_IP }}
+    #     username: ${{ secrets.SERVER_USER }}
+    #     key: ${{ secrets.SSH_PRIVATE_KEY }}
+    #     port: 22
+    #     script: |
+    #       cd ~/deploy/${{ github.event.repository.name }}
+    #       docker-compose -f docker-compose.yaml pull
+    #       docker-compose -f docker-compose.yaml up -d
