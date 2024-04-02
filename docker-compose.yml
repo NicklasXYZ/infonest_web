@@ -14,15 +14,14 @@ services:
     volumes:
       - nginx_secrets:/etc/letsencrypt:rw
       - ./user_conf.d:/etc/nginx/user_conf.d:rw
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "5"
-        max-size: "10m"
+    # logging:
+    #   driver: "json-file"
+    #   options:
+    #     max-file: "5"
+    #     max-size: "10m"
 
   bandim-fastapi:
     restart: always
-
     image: ghcr.io/nicklasxyz/bandim_system:main
     container_name: bandim-api
     env_file: ./bandim-fastapi.env
@@ -30,11 +29,11 @@ services:
       - "8000:8000"
     # volumes:
     #   - bandim_db:/app/bandim.db:rw
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "5"
-        max-size: "10m"
+    # logging:
+    #   driver: "json-file"
+    #   options:
+    #     max-file: "5"
+    #     max-size: "10m"
 
   redis:
     restart: always
@@ -44,11 +43,11 @@ services:
       - 6379:6379
     volumes:
       - redis_data:/data:rw
-    logging:
-      driver: "json-file"
-      options:
-        max-file: "5"
-        max-size: "10m"
+    # logging:
+    #   driver: "json-file"
+    #   options:
+    #     max-file: "5"
+    #     max-size: "10m"
 
 volumes:
   nginx_secrets:
