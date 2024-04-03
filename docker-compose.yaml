@@ -23,7 +23,7 @@ services:
   bandim-fastapi:
     restart: always
 
-    image: ghcr.io/nicklasxyz/bandim_system:main
+    image: ghcr.io/nicklasxyz/bandim_platform:main
     container_name: bandim-api
     env_file: ./bandim-fastapi.env
     ports:
